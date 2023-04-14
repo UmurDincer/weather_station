@@ -1,0 +1,31 @@
+/*
+ * bmp180.c
+ *
+ *  Created on: Apr 13, 2023
+ *      Author: LENOVO
+ */
+
+#include "bmp180.h"
+
+extern I2C_HandleTypeDef hi2c1;
+
+#define BMP180_CONTROL_REGISTER 0xF4
+
+BMP180_Calibration_Data bmp180_calib;
+
+
+void bmp180_init(void) {
+	uint8_t regAddr = BMP180_REG_CALIB_START;
+	uint8_t calibData[22];
+
+	if(HAL_I2C_Master_Transmit(&hi2c1, BMP180_ADDR_WRITE, regAddr , 1, HAL_MAX_DELAY) != HAL_OK){
+		return;
+	}
+
+	if(HAL_I2C_Master_Receive(&hi2c1, BMP180_ADDR_READ, calibData, 22, HAL_MAX_DELAY) != HAL_OK){
+		return;
+	}
+
+
+
+}
