@@ -4788,3 +4788,24 @@ arm-none-eabi-size   weather_measurement.elf
   41116	    488	   2008	  43612	   aa5c	weather_measurement.elf
 Finished building: default.size.stdout
  
+16:05:26 **** Incremental Build of configuration Debug for project weather_measurement ****
+make -j4 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F407xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "weather_measurement.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\LENOVO\Desktop\weather_station_ifttt\weather_measurement\STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="weather_measurement.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: weather_measurement.elf
+ 
+arm-none-eabi-size   weather_measurement.elf 
+arm-none-eabi-objdump -h -S  weather_measurement.elf  > "weather_measurement.list"
+   text	   data	    bss	    dec	    hex	filename
+  41116	    488	   2008	  43612	   aa5c	weather_measurement.elf
+Finished building: default.size.stdout
+ 
+Finished building: weather_measurement.list
+ 
+16:05:30 **** Incremental Build of configuration Debug for project weather_measurement ****
+make -j4 all 
+arm-none-eabi-size   weather_measurement.elf 
+   text	   data	    bss	    dec	    hex	filename
+  41116	    488	   2008	  43612	   aa5c	weather_measurement.elf
+Finished building: default.size.stdout
+ 
