@@ -64,10 +64,10 @@ while True:
     sleep(0.1)
     
     temperature = str(my_data['temp'])
-    humidity = str(my_data['humi'])
     pressure = str(my_data['press'])
+    humidity = str(my_data['humid'])
 
-    send_measurements = {"value1" : temperature, "value2" : humidity, "value3" : pressure}
+    send_measurements = {"value1" : temperature, "value2" : pressure, "value3" : humidity}
     print("Sending POST request to IFTTT with this content: ", my_data)
     response = requests.post(url, headers = headers, data = json.dumps(send_measurements))
     ifttt_back = response.content
