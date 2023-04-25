@@ -1,6 +1,6 @@
 <h1>Weather Station</h1>
 
-<h2>Components:/h2> <br>
+<h2>Components:</h2> <br>
 -ESP32WROOM32  <br>
 -STM32F407 <br>
 -BMP180 <br>
