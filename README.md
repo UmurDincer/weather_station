@@ -18,4 +18,4 @@ environment data by e-mail to registered e-mail adresses.
 
 <h2>Applets:</h2>
 
-Webhook and Email appets were used for this project from <a href="url">ifttt.com</a> .
+Webhook and Email appets were used for this project from <a href="url">ifttt.com</a> . 
