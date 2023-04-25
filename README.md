@@ -6,7 +6,9 @@
 -BMP180 <br>
 -DHT11 <br>
 -Button <br>
+
 <h2>Project:</h2>
+
 In this project, Sensor readings are done by STM32. Then, the collected data is sent to ESP32 over UART as JSON format. The readings are sent
 automatically in every 4 hours or they can be sent manually by pressing interrupt button. Received data is sent to IFTTT over Wi-Fi by using ESP32 and it sends collected
 environment data by e-mail to registered e-mail adresses. 
