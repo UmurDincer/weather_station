@@ -16,3 +16,6 @@ environment data by e-mail to registered e-mail adresses.
 ![Ekran görüntüsü 2023-04-25 164153](https://user-images.githubusercontent.com/99329257/234295685-4a0df123-6a50-4583-b52a-00b3e97ccf89.png)
 
 
+<h2>Applets:</h2>
+
+Webhook and Email appets were used for this project from <a href="url">ifttt.com</a> .
