@@ -59,14 +59,14 @@ static void MX_TIM6_Init(void);
 static void MX_TIM7_Init(void);
 static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
-float my_temperature = 0.0;
-long int my_pressure = 0;
+float my_temperature = 0;
+float my_pressure = 0;
 float altitude = 0;
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+void tx_json_data(float temp, float press, float alt);
 /* USER CODE END 0 */
 
 /**
@@ -111,11 +111,12 @@ int main(void)
   {
     /* USER CODE END WHILE */
 	  my_temperature = bmp180_read_temperature();
+	  my_pressure = bmp180_read_pressure(1);
+	  altitude = bmp180_read_altitude(1);
+
 	  HAL_Delay(2000);
-	  my_pressure = bmp180_read_pressure(advanced_resolution);
-	  HAL_Delay(2000);
-	  altitude = bmp180_read_altitude(standard);
-	  HAL_Delay(2000);
+
+	  tx_json_data(my_temperature, my_pressure, altitude);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -358,7 +359,24 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+/*
+ * TODO: 1) fix warnings
+ * 		 2) complete the function
+ * 		 3) add timer to send datas automatically
+ * 		 4)
+ * */
 
+void tx_json_data(float temp, float press, float alt)
+{
+	char json_buff[100] = "";
+
+	sprintf(json_buff,	"{ \"temp\" : \"%.2f\", \"press\": \"%.2f\", \"alt\" : \"%.2f\" }", temp, press, alt);
+    strcat(json_buff, "\0");
+
+	HAL_UART_Transmit(&huart2, (uint8_t*)json_buff, strlen(json_buff), HAL_MAX_DELAY);
+
+
+}
 /* USER CODE END 4 */
 
 /**
