@@ -28,12 +28,14 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
-#include<string.h>
-#include<stdlib.h>
-#include<stdio.h>
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "bmp180.h"
+#include "dht11.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -61,14 +63,15 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define buzzer_Pin GPIO_PIN_1
 #define buzzer_GPIO_Port GPIOC
-#define dht11_Pin GPIO_PIN_0
-#define dht11_GPIO_Port GPIOA
+#define DHT11_Pin GPIO_PIN_5
+#define DHT11_GPIO_Port GPIOB
 #define bmp180_SLC_Pin GPIO_PIN_6
 #define bmp180_SLC_GPIO_Port GPIOB
 #define bmp180_SDA_Pin GPIO_PIN_7
 #define bmp180_SDA_GPIO_Port GPIOB
 #define button_interrupt_Pin GPIO_PIN_1
 #define button_interrupt_GPIO_Port GPIOE
+#define button_interrupt_EXTI_IRQn EXTI1_IRQn
 
 /* USER CODE BEGIN Private defines */
 

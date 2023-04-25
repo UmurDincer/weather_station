@@ -1,10 +1,10 @@
-09:38:38 **** Incremental Build of configuration Debug for project weather_measurement ****
+15:59:10 **** Incremental Build of configuration Debug for project weather_measurement ****
 make -j4 all 
 arm-none-eabi-size   weather_measurement.elf 
    text	   data	    bss	    dec	    hex	filename
-  42860	    488	   1968	  45316	   b104	weather_measurement.elf
+  41116	    488	   2008	  43612	   aa5c	weather_measurement.elf
 Finished building: default.size.stdout
  
 
-09:38:38 Build Finished. 0 errors, 0 warnings. (took 330ms)
+15:59:10 Build Finished. 0 errors, 0 warnings. (took 312ms)
 

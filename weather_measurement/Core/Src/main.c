@@ -18,7 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "bmp180.h"
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -48,7 +48,8 @@ TIM_HandleTypeDef htim7;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-
+DHT11_HandleTypeDef hdht11;
+GPIO_InitTypeDef gpio_dht11;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -59,14 +60,19 @@ static void MX_TIM6_Init(void);
 static void MX_TIM7_Init(void);
 static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
-float my_temperature = 0;
-float my_pressure = 0;
-float altitude = 0;
+void tx_json_data(float temp, float press, DHT11_HandleTypeDef *hdht11);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void tx_json_data(float temp, float press, float alt);
+float my_temperature = 0;
+float my_pressure = 0;
+float altitude = 0;
+float dht_temperature = 0;
+float dht_humidity = 0;
+uint8_t check = 0;
+int counter = 0;
 /* USER CODE END 0 */
 
 /**
@@ -103,6 +109,7 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   bmp180_init();
+  HAL_TIM_Base_Start_IT(&htim7);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -110,14 +117,14 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+	  check = DHT11_Read_Value(&hdht11);
 	  my_temperature = bmp180_read_temperature();
 	  my_pressure = bmp180_read_pressure(1);
-	  altitude = bmp180_read_altitude(1);
 
 	  HAL_Delay(2000);
 
-	  tx_json_data(my_temperature, my_pressure, altitude);
-    /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
 }
@@ -257,10 +264,10 @@ static void MX_TIM7_Init(void)
 
   /* USER CODE END TIM7_Init 1 */
   htim7.Instance = TIM7;
-  htim7.Init.Prescaler = 65535;
+  htim7.Init.Prescaler = 45000;
   htim7.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim7.Init.Period = 65535;
-  htim7.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  htim7.Init.Period = 60000;
+  htim7.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim7) != HAL_OK)
   {
     Error_Handler();
@@ -332,7 +339,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(buzzer_GPIO_Port, buzzer_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(dht11_GPIO_Port, dht11_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(DHT11_GPIO_Port, DHT11_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : buzzer_Pin */
   GPIO_InitStruct.Pin = buzzer_Pin;
@@ -341,12 +348,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(buzzer_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : dht11_Pin */
-  GPIO_InitStruct.Pin = dht11_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(dht11_GPIO_Port, &GPIO_InitStruct);
+  /*Configure GPIO pin : DHT11_Pin */
+  gpio_dht11.Pin = DHT11_Pin;
+  gpio_dht11.Mode = GPIO_MODE_OUTPUT_PP;
+  gpio_dht11.Pull = GPIO_PULLUP;
+  gpio_dht11.Speed = GPIO_SPEED_FREQ_HIGH;
+  HAL_GPIO_Init(DHT11_GPIO_Port, &gpio_dht11);
 
   /*Configure GPIO pin : button_interrupt_Pin */
   GPIO_InitStruct.Pin = button_interrupt_Pin;
@@ -354,29 +361,47 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(button_interrupt_GPIO_Port, &GPIO_InitStruct);
 
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
-/*
- * TODO: 1) fix warnings
- * 		 2) complete the function
- * 		 3) add timer to send datas automatically
- * 		 4)
- * */
 
-void tx_json_data(float temp, float press, float alt)
+
+void tx_json_data(float temp, float press, DHT11_HandleTypeDef *hdht11)
 {
 	char json_buff[100] = "";
 
-	sprintf(json_buff,	"{ \"temp\" : \"%.2f\", \"press\": \"%.2f\", \"alt\" : \"%.2f\" }", temp, press, alt);
-    strcat(json_buff, "\0");
+	sprintf(json_buff,	"{ \"temp\" : \"%.2f\", \"press\": \"%.2f\", \"humid\" : \"%.2f\" }", temp, press, hdht11->humidity);
+    strcat(json_buff, "\n\0");
 
 	HAL_UART_Transmit(&huart2, (uint8_t*)json_buff, strlen(json_buff), HAL_MAX_DELAY);
 
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  counter++;
+
+  if(counter == 480){ 	// every 4 hours
+	  tx_json_data(my_temperature, my_pressure, &hdht11);
+	  counter = 0;
+  }
 
 }
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+
+	if(GPIO_Pin == GPIO_PIN_1){
+		tx_json_data(my_temperature, my_pressure, &hdht11);
+	}
+}
+
 /* USER CODE END 4 */
 
 /**
