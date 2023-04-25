@@ -19,3 +19,7 @@ environment data by e-mail to registered e-mail adresses.
 <h2>Applets:</h2>
 
 Webhook and Email appets were used for this project from <a href="url">ifttt.com</a> . 
+
+TODO: 
+1) LCD screen will be added to inform local user.
+2) Air quality sensor will be added.
